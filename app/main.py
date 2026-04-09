@@ -1,7 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 app = FastAPI()
 
-@app.get('/')
-def  hello_world():
-    return {"message":"hello Wordl"}
