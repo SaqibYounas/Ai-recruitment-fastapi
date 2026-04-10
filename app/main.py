@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI,APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pyrate_limiter import Duration, Limiter, Rate
 from fastapi_limiter.depends import RateLimiter
+from routes.auth import signup
 
 app = FastAPI()
+router=APIRouter()
 
 origins = [
 "http://localhost:8080",
@@ -16,6 +18,10 @@ allow_credentials=True,
 allow_methods=["*"],
 allow_headers=["*"],
 )
+
+
+router.post("/auth",signup)
+
 
 @app.get(
 "/",
