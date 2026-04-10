@@ -1,11 +1,16 @@
 from fastapi import FastAPI, APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pyrate_limiter import Duration, Limiter, Rate
 from fastapi_limiter.depends import RateLimiter
-from routes.auth import auth
+from app.routes.auth import routes
+from app.models.auth import create_db_and_tables
 app = FastAPI()
 router = APIRouter()
 origins = ["*"]
+
+
+@app.on_event("startup")
+async def on_startup():
+    await create_db_and_tables()
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,14 +20,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-rate_limiter = Limiter(Rate(2, Duration.SECOND * 5))
 
 
-app.include_router(auth)
+app.include_router(routes)
 
 @app.get(
-    "/",
-    dependencies=[Depends(RateLimiter(times=2, seconds=5))]
+    "/"
 )
 async def index():
     return {"msg": "Hello World"}

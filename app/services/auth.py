@@ -1,11 +1,9 @@
-from schemas.auth import UserSignup
-from models.auth import User
+from app.schemas.auth import UserSignup
+from app.models.auth import User
 from sqlmodel import Session
 
 
-
 def create_user(user_data: UserSignup, session: Session):
-
     db_user = User(
     name=user_data.name,
     email=user_data.email,

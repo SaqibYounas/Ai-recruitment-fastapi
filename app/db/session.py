@@ -1,5 +1,8 @@
-from config.dbconnection import SessionLocal
+from app.config.dbconnection import SessionLocal
 
-async def get_session():
-    async with SessionLocal() as session:
-        yield session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

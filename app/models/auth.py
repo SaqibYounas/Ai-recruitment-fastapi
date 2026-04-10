@@ -1,37 +1,45 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
+from database import Base
 from enum import Enum
 from uuid import UUID, uuid4
-from typing import Optional
-from config.database import engine
+from app.config.dbconnection import Base, engine
 
-
-class CompanySize(str, Enum):
+class CompanySize(str, enum.Enum):
     small = "small"
     medium = "medium"
     large = "large"
 
 
+class Company(Base):
+    __tablename__ = "companies"
 
-class Company(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-    companyName: str
-    position: str
-    companySize: CompanySize
-    industryType: str
-    location: str
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    
+    company_name = Column(String, index=True)
+    position = Column(String)
+    company_size = Column(Enum(CompanySize))
+    industry_type = Column(String)
+    location = Column(String)
+
+    # relationship
+    users = relationship("User", back_populates="company")
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+
+    name = Column(String)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+
+    company_id = Column(String, ForeignKey("companies.id"))
+
+    # relationship
+    company = relationship("Company", back_populates="users")
 
 
 
-class User(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-
-    name: str
-    email: str = Field(index=True, unique=True)
-    password: str
-
-    company_id: Optional[UUID] = Field(default=None, foreign_key="company.id")
-    company: Optional[Company] = Relationship()
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+def create_db():
+    Base.metadata.create_all(bind=engine)
