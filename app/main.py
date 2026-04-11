@@ -2,15 +2,15 @@ from fastapi import FastAPI, APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter.depends import RateLimiter
 from app.routes.auth import routes
-from app.models.auth import create_db_and_tables
+from app.models.auth import create_db
 app = FastAPI()
 router = APIRouter()
 origins = ["*"]
 
 
 @app.on_event("startup")
-async def on_startup():
-    await create_db_and_tables()
+def on_startup():
+     create_db()
 
 app.add_middleware(
     CORSMiddleware,
