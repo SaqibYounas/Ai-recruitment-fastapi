@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter.depends import RateLimiter
-from app.routes.auth import routes
+from app.routes.auth import auth_router
 from app.models.auth import create_db
 
 app = FastAPI()
@@ -20,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(routes)
+app.include_router(auth_router)
 
 @app.get(
     "/"
