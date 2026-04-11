@@ -1,10 +1,10 @@
-from fastapi import FastAPI, APIRouter, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter.depends import RateLimiter
 from app.routes.auth import routes
 from app.models.auth import create_db
+
 app = FastAPI()
-router = APIRouter()
 origins = ["*"]
 
 
@@ -20,12 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
 app.include_router(routes)
 
 @app.get(
     "/"
 )
-async def index():
+def index():
     return {"msg": "Hello World"}

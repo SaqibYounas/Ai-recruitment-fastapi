@@ -23,7 +23,7 @@ class Company(Base):
     industry_type = Column(String)
     location = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True),server_default=func.now(), onupdate=func.now())
 
     users = relationship("User", back_populates="company")
 
@@ -37,9 +37,9 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
 
-    company_id = Column(String, ForeignKey("companies.id"))
+    company_id = Column(String, ForeignKey("companies.id"),nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(),onupdate=func.now())
     company = relationship("Company", back_populates="users")
 
 
