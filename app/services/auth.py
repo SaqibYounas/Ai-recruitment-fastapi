@@ -5,13 +5,13 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from sqlmodel import Session, select
-from core.settings import settings
+from app.core.settings import settings
 from app.schemas.auth import UserSignup, CompanyInfo
 from app.schemas.auth import RegisterResponse, CompanyResponse, UserOut
 from app.models.auth import User, Company
 from app.db.session import get_session
 from pwdlib import PasswordHash
-
+from fastapi import Cookie 
 
 password_hasher = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -69,14 +69,15 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    session: Annotated[Session, Depends(get_session)]
+    access_token: Annotated[str | None, Cookie()] = None,
+    session: Annotated[Session, Depends(get_session)]=None
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    token = access_token.replace("Bearer ", "")
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         email: str = payload.get("sub")
