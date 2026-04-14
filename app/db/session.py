@@ -5,4 +5,4 @@ def get_session():
     try:
         yield db
     finally:
-        db.close()
+        db.close() 
