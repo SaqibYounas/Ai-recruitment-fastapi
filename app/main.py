@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_limiter.depends import RateLimiter
 from app.routes.auth import auth_router
+from app.routes.job import job_router
 from app.models.auth import create_db
 
 app = FastAPI()
-origins = ["*"]
 
+origins = ["*"]
 
 @app.on_event("startup")
 def on_startup():
@@ -21,9 +21,8 @@ app.add_middleware(
 ) 
 
 app.include_router(auth_router)
+app.include_router(job_router)  
 
-@app.get(
-    "/"
-)
+@app.get("/")
 def index():
-    return {"msg": "Hello World"}
+    return {"msg": "Welcome to Recruitment AI Portal"}
