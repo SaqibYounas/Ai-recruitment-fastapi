@@ -1,34 +1,35 @@
-# from sqlmodel import SQLModel, Field, Relationship
-# from typing import Optional
-# from datetime import datetime
-# from enum import Enum
+from sqlmodel import SQLModel, Field
+from typing import Optional
+from datetime import datetime
+from enum import Enum
 
-# class JobType(str, Enum):
-#     FULL_TIME = "full-time"
-#     PART_TIME = "part-time"
-#     REMOTE = "remote"
-#     CONTRACT = "contract"
+class JobType(str, Enum):
+    FULL_TIME = "full-time"
+    PART_TIME = "part-time"
+    REMOTE = "remote"
+    CONTRACT = "contract"
 
-# class JobBase(SQLModel):
-#     title: str = Field(index=True)
-#     description: str
-#     company_name: str
-#     location: str
-#     salary_range: Optional[str] = None
-#     job_type: JobType = JobType.FULL_TIME
+class JobBase(SQLModel):
+    title: str = Field(index=True)
+    description: str
+    company_name: str
+    location: str
+    salary_range: Optional[str] = None
+    job_type: JobType = JobType.FULL_TIME
 
-# class Job(JobBase, table=True):
-#     id: Optional[int] = Field(default=None, primary_key=True)
-#     created_at: datetime = Field(default_factory=datetime.utcnow)
-#     is_active: bool = Field(default=True)
-    
-#     user_id: int = Field(foreign_key="user.id") 
+class Job(JobBase, table=True):
+    __tablename__ = "jobs" 
 
-# class JobCreate(JobBase):
-#     pass
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = Field(default=True)
+    user_id: str = Field(foreign_key="users.id") 
 
-# class JobResponse(JobBase):
-#     id: int
-#     user_id: int
-#     created_at: datetime
-#     is_active: bool
+class JobCreate(JobBase):
+    pass
+
+class JobResponse(JobBase):
+    id: int
+    user_id: str 
+    created_at: datetime
+    is_active: bool
