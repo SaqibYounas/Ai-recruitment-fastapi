@@ -2,17 +2,15 @@ from datetime import timedelta
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status,Response
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session
+from sqlmodel import Session,select
 from app.core.settings import settings
 from app.db.session import get_session
-from app.models.auth import User
 from app.schemas.auth import Token, UserOut, UserSignup, RegisterResponse, CompanyInfo, CompanyResponse
+from app.core.security import create_access_token
 from app.services.auth import (
     user_login, 
     create_user, 
     add_company_info,
-    get_current_user, 
-    create_access_token, 
 )
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -48,8 +46,10 @@ async def login_for_access_token(
         secure=False     
     )
 
-    return {"message": "Login successful and cookie set"}
-
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer"
+    }
 @auth_router.post("/company-info", response_model=CompanyResponse)
 def save_company(company: CompanyInfo, session: Annotated[Session, Depends(get_session)]):
     result = add_company_info(company, session)
@@ -57,6 +57,6 @@ def save_company(company: CompanyInfo, session: Annotated[Session, Depends(get_s
         raise HTTPException(status_code=404, detail="User not found")
     return result
 
-@auth_router.get("/me", response_model=UserOut)
-async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
-    return current_user
+# @auth_router.get("/me", response_model=UserOut)
+# async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+#     return current_user

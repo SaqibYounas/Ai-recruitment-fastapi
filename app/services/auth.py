@@ -1,22 +1,14 @@
-from datetime import datetime, timedelta, timezone
-from typing import Annotated
-import jwt
-from jwt.exceptions import InvalidTokenError
-from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
-from sqlmodel import Session, select
-from app.core.settings import settings
+from sqlmodel import select
 from app.schemas.auth import UserSignup, CompanyInfo
 from app.schemas.auth import RegisterResponse, CompanyResponse, UserOut
 from app.models.auth import User, Company
-from app.db.session import get_session
 from pwdlib import PasswordHash
-from fastapi import Cookie 
-
+from app.db.session import get_session
 password_hasher = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-def create_user(user_data: UserSignup, session: Session) -> RegisterResponse:
+def create_user(user_data: UserSignup, session) -> RegisterResponse:
     hash_password = password_hasher.hash(user_data.password)
     save_user = User(
         name=user_data.name,
@@ -31,16 +23,22 @@ def create_user(user_data: UserSignup, session: Session) -> RegisterResponse:
         user=UserOut.model_validate(save_user)
     )
 
-def user_login(form_data: OAuth2PasswordRequestForm, session: Session) -> User | None:
+
+def user_login(form_data: OAuth2PasswordRequestForm, session: get_session) -> User | None:
     statement = select(User).where(User.email == form_data.username)
-    db_user = session.exec(statement).scalar_one_or_none()
+    results = session.exec(statement)
+    db_user = results.first() 
+
     if not db_user:
         return None
+
     if not password_hasher.verify(form_data.password, db_user.password):
         return None
+
     return db_user
 
-def add_company_info(company_data: CompanyInfo, session: Session) -> CompanyResponse | None:
+
+def add_company_info(company_data: CompanyInfo, session: get_session) -> CompanyResponse | None:
     db_user = session.get(User, company_data.user_id)
     if not db_user:
         return None
@@ -61,33 +59,3 @@ def add_company_info(company_data: CompanyInfo, session: Session) -> CompanyResp
     session.commit()
     session.refresh(db_user)
     return CompanyResponse(message="Company info saved successfully", user=UserOut.model_validate(db_user))
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-
-async def get_current_user(
-    access_token: Annotated[str | None, Cookie()] = None,
-    session: Annotated[Session, Depends(get_session)]=None
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    token = access_token.replace("Bearer ", "")
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except InvalidTokenError:
-        raise credentials_exception
-    
-    statement = select(User).where(User.email == email)
-    user = session.exec(statement).one_or_none()
-    if user is None:
-        raise credentials_exception
-    return user
