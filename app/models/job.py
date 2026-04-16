@@ -10,6 +10,7 @@ class JobType(str, Enum):
     CONTRACT = "contract"
 
 class JobBase(SQLModel):
+    
     title: str = Field(index=True)
     description: str
     company_name: str
@@ -33,3 +34,4 @@ class JobResponse(JobBase):
     user_id: str 
     created_at: datetime
     is_active: bool
+    shareable_link: Optional[str] = None 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status,HTTPException
 from sqlmodel import Session
 from typing import Annotated, List
 from app.db.session import get_session
@@ -18,15 +18,13 @@ def post_job(
     session: Annotated[Session, Depends(get_session)]
 ):
     user_email = request.state.user_email
-    
     user = session.exec(select(User).where(User.email == user_email)).first()
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # 3. User ID ke saath job create karein
     return create_new_job(job_data=job_in, session=session, user_id=user.id)
 
-@job_router.get("/", response_model=List[JobResponse])
+@job_router.get("/all", response_model=List[JobResponse])
 def list_jobs(session: Annotated[Session, Depends(get_session)]):
     return get_all_jobs(session)
