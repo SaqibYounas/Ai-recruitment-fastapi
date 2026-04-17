@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form, BackgroundTasks,
 from sqlmodel import Session
 from app.db.session import get_session
 from app.core.utils import upload_cv_to_s3
-from app.services.application import save_application_to_db, 
+from app.services.application import save_application_to_db
 import uuid
 
-router = APIRouter(prefix="/apply", tags=["Applications"])
+app_router = APIRouter(prefix="/apply", tags=["Applications"])
 
-@router.post("/")
+@app_router.post("/")
 async def apply_for_job(
     request: Request,
     job_id: int = Form(...),
