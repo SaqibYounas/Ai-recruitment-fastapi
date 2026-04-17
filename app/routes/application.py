@@ -6,6 +6,7 @@ from app.services.application import save_application_to_db
 from app.services.ai_service import process_cv_with_ai
 
 app_router = APIRouter(prefix="/apply", tags=["Applications"])
+
 @app_router.post("/")
 async def apply_for_job(
     background_tasks: BackgroundTasks,
@@ -31,8 +32,6 @@ async def apply_for_job(
         applicant_phone=applicant_phone,
         resume_url=resume_url,
     )
-    
-
     cv_content = f"Applicant {applicant_email} skills for Job {job_id}" 
 
     background_tasks.add_task(
@@ -40,7 +39,6 @@ async def apply_for_job(
         new_app.id, 
         job_id, 
         cv_content, 
-        get_session
     )
 
     return {

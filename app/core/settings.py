@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY:str
     AWS_BUCKET_NAME:str
     AWS_REGION:str
+    OPENAI_API_KEY:str
 
     model_config = SettingsConfigDict(env_file=".env")
 
