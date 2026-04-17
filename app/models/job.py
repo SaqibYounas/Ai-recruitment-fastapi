@@ -17,6 +17,10 @@ class JobBase(SQLModel):
     location: str
     salary_range: Optional[str] = None
     job_type: JobType = JobType.FULL_TIME
+    expires_at: Optional[datetime] = Field(
+        default=None, 
+        description="Date and time when the job posting will expire"
+    )
 
 class Job(JobBase, table=True):
     __tablename__ = "jobs" 

@@ -8,6 +8,10 @@ class JobApplication(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     job_id: int = Field(foreign_key="jobs.id")
     user_id: str = Field(foreign_key="users.id")
+    
+    applicant_email: str = Field(index=True) # User ka email
+    applicant_phone: str = Field(max_length=20) # User ka phone number
+    
     resume_url: str  
     cv_text: Optional[str] = None 
     ai_score: Optional[int] = Field(default=0)
