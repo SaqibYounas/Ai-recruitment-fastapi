@@ -14,7 +14,7 @@ async def process_cv_with_ai(application_id: int, job_id: int, cv_text: str):
         try:
             job_query = select(Job).where(Job.id == job_id)
             job_data = session.exec(job_query).first()
-            
+             
             job_requirements = job_data.description if job_data else "General technical skills and experience."
 
             prompt = f"""
