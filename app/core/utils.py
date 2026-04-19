@@ -31,13 +31,13 @@ async def extract_text_from_s3_url(url: str):
         print(f"Extraction Error: {e}")
         return "" 
 
-def upload_cv_to_s3(file: UploadFile, job_id: int, user_id: str):
+def upload_cv_to_s3(file: UploadFile, job_id: int):
     bucket_name = settings.AWS_BUCKET_NAME
     
     timestamp = int(time.time())
     unique_filename = f"{timestamp}_{file.filename}"
     
-    file_key = f"resumes/user_{user_id}/job_{job_id}/{unique_filename}"
+    file_key = f"resumes/job_{job_id}/{unique_filename}"
     
     try:
         file.file.seek(0)

@@ -13,23 +13,20 @@ app_router = APIRouter(prefix="/applications", tags=["Applications"])
 @app_router.post("/apply")
 async def apply_for_job(
     background_tasks: BackgroundTasks,
-    request: Request,
     job_id: int = Form(...),
     applicant_email: str = Form(...), 
     applicant_phone: str = Form(...), 
     file: UploadFile = File(...),
     session: Session = Depends(get_session)
 ):
-    user_id = getattr(request.state, "user_id", "1") 
     
-    upload_result = upload_cv_to_s3(file, job_id, user_id)
+    upload_result = upload_cv_to_s3(file, job_id,)
     if not upload_result:
         raise HTTPException(status_code=500, detail="S3 Upload Failed")
 
     new_app = save_application_to_db(
         session=session,
         job_id=job_id,
-        user_id=user_id,
         applicant_email=applicant_email,
         applicant_phone=applicant_phone,
         resume_url=upload_result["url"],

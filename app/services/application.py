@@ -1,12 +1,10 @@
 from sqlmodel import Session, select
 from app.models.application import JobApplication
 from app.models.job import Job
-from typing import List
 
 def save_application_to_db(
     session: Session, 
     job_id: int, 
-    user_id: str, 
     applicant_email: str, 
     applicant_phone: str, 
     resume_url: str, 
@@ -14,7 +12,6 @@ def save_application_to_db(
 ):
     new_app = JobApplication(
         job_id=job_id,
-        user_id=user_id,
         applicant_email=applicant_email,
         applicant_phone=applicant_phone,
         resume_url=resume_url,

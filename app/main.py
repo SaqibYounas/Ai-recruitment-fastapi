@@ -27,7 +27,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(job_router, dependencies=[Depends(verify_token)])
-app.include_router(app_router, dependencies=[Depends(verify_token)])
+app.include_router(app_router)
 app.include_router(subscription_router, dependencies=[Depends(verify_token)])
 @app.get("/")
 def index():
