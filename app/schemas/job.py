@@ -4,7 +4,6 @@ from datetime import datetime
 from enum import Enum
 
 
-
 class JobType(str, Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"

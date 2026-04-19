@@ -1,10 +1,8 @@
 
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List
 from uuid import uuid4
 from datetime import datetime
 import enum
-from app.models.job import Job
 
 class PackageTier(str, enum.Enum):
     free = "free"

@@ -6,7 +6,8 @@ from sqlmodel import Session
 from app.core.settings import settings
 from app.db.session import get_session
 from app.schemas.auth import Token, UserSignup, RegisterResponse, CompanyInfo, CompanyResponse
-from app.core.security import create_access_token
+from app.core.security import create_access_token,verify_token
+from app.models.user import User
 from app.services.auth import (
     user_login, 
     create_user, 
@@ -50,9 +51,10 @@ async def login_for_access_token(
         "access_token": access_token, 
         "token_type": "bearer"
     }
+
 @auth_router.post("/company-info", response_model=CompanyResponse)
-def save_company(company: CompanyInfo, session: Annotated[Session, Depends(get_session)]):
-    result = add_company_info(company, session)
+def save_company(company: CompanyInfo, session: Annotated[Session, Depends(get_session)],current_user: Annotated[User, Depends(verify_token)]):
+    result = add_company_info(company, session, current_user)
     if not result:
         raise HTTPException(status_code=404, detail="User not found")
     return result

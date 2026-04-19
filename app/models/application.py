@@ -9,8 +9,8 @@ class JobApplication(SQLModel, table=True):
     job_id: int = Field(foreign_key="jobs.id")
     user_id: str = Field(foreign_key="users.id")
     
-    applicant_email: str = Field(index=True) # User ka email
-    applicant_phone: str = Field(max_length=20) # User ka phone number
+    applicant_email: str = Field(index=True) 
+    applicant_phone: str = Field(max_length=20) 
     
     resume_url: str  
     cv_text: Optional[str] = None 
