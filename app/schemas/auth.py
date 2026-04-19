@@ -11,6 +11,10 @@ class CompanySize(str, Enum):
     medium = "medium"
     large = "large"
 
+class PackageTier(str, Enum):
+    free = "free"
+    premium = "premium"
+    enterprise = "enterprise"
 
 
 class CompanyInfo(BaseModel):
@@ -20,6 +24,7 @@ class CompanyInfo(BaseModel):
     industryType: str
     location: str
     user_id:str
+    package:PackageTier
 
 
 

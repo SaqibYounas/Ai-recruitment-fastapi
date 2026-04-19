@@ -2,10 +2,10 @@ from datetime import timedelta
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status,Response
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session,select
+from sqlmodel import Session
 from app.core.settings import settings
 from app.db.session import get_session
-from app.schemas.auth import Token, UserOut, UserSignup, RegisterResponse, CompanyInfo, CompanyResponse
+from app.schemas.auth import Token, UserSignup, RegisterResponse, CompanyInfo, CompanyResponse
 from app.core.security import create_access_token
 from app.services.auth import (
     user_login, 
@@ -15,7 +15,7 @@ from app.services.auth import (
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-@auth_router.post("/signup", response_model=RegisterResponse)
+@auth_router.post("/register", response_model=RegisterResponse)
 def signup(user: UserSignup, session: Annotated[Session, Depends(get_session)]):
     return create_user(user, session)
 

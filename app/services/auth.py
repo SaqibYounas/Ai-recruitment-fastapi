@@ -50,7 +50,8 @@ def add_company_info(company_data: CompanyInfo, session: get_session) -> Company
         position=company_data.position,
         company_size=company_data.companySize,
         industry_type=company_data.industryType,
-        location=company_data.location
+        location=company_data.location,
+        package=company_data.package
     )
     session.add(new_company)
     session.flush() 

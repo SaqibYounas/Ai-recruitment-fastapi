@@ -5,13 +5,15 @@ from app.routes.job import job_router
 from app.models.user import create_db
 from app.routes.application import app_router
 from app.middleware.auth_handle import auth_middleware
+from app.config.dbconnection import engine
+
 app = FastAPI()
 
 origins = ["*"]
 app.middleware("http")(auth_middleware)
 @app.on_event("startup")
 def on_startup():
-     create_db()
+     create_db(engine)
 
 app.add_middleware(
     CORSMiddleware,
