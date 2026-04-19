@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, BackgroundTasks, Request, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form, BackgroundTasks, Request, HTTPException,Query
 from sqlmodel import Session
 from typing import Annotated, List, Any
 from app.db.session import get_session
 from app.core.utils import upload_cv_to_s3
-from app.services.application import save_application_to_db, get_applications_for_employer
+from app.services.application import save_application_to_db, get_applications_for_employer,get_filtered_recruiter_data
 from app.services.ai_service import process_cv_with_ai
 from app.core.security import verify_token
 from app.models.user import User
@@ -58,3 +58,29 @@ def list_employer_applications(
         return []
 
     return applications
+
+
+
+@app_router.post("/top-candidates")
+def get_recruiter_top_candidates(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(verify_token),
+    limit: int = Query(default=10, ge=1, le=100), 
+    min_score: int = Query(default=0, ge=0, le=100) 
+):
+
+    candidates = get_filtered_recruiter_data(
+        session=session, 
+        recruiter_id=current_user.id, 
+        limit=limit, 
+        min_score=min_score
+    )
+    
+    return {
+        "count": len(candidates),
+        "filters_applied": {
+            "limit": limit,
+            "min_score": min_score
+        },
+        "candidates": candidates
+    }

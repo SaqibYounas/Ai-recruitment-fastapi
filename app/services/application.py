@@ -1,6 +1,7 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, desc
 from app.models.application import JobApplication
 from app.models.job import Job
+from typing import List
 
 def save_application_to_db(
     session: Session, 
@@ -36,3 +37,31 @@ def get_applications_for_employer(session: Session, employer_id: str):
         data["job_title"] = job_title
         final_data.append(data)
     return final_data
+
+
+def get_filtered_recruiter_data(session: Session, recruiter_id: str, limit: int, min_score: int):
+    statement = (
+        select(JobApplication, Job.title)
+        .join(Job, JobApplication.job_id == Job.id)
+        .where(Job.user_id == recruiter_id)       
+        .where(JobApplication.ai_score >= min_score) 
+        .order_by(desc(JobApplication.ai_score))     
+        .limit(limit)                              
+    )
+    
+    results = session.exec(statement).all()
+    
+    return [
+        {
+            "application_id": app.id,
+            "job_title": job_title,
+            "applicant_email": app.applicant_email,
+            "applicant_phone": app.applicant_phone,
+            "cv_name": app.cv_name,
+            "resume_url": app.resume_url,
+            "ai_score": app.ai_score,
+            "status": app.status,
+            "applied_at": app.applied_at
+        }
+        for app, job_title in results
+    ]

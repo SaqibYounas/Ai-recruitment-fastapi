@@ -21,3 +21,15 @@ class JobApplication(SQLModel, table=True):
     applied_at: datetime = Field(default_factory=datetime.utcnow)
 
     job: Optional["Job"] = Relationship()
+
+
+
+class RecruiterCandidateResponse():
+    application_id: int
+    job_title: str
+    applicant_email: str
+    cv_name: str
+    resume_url: str
+    ai_score: int
+    status: str
+    applied_at: datetime
