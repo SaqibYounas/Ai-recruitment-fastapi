@@ -4,6 +4,7 @@ from io import BytesIO
 import boto3
 from fastapi import UploadFile
 from app.core.settings import settings
+import time
 
 s3_client = boto3.client(
     "s3",
@@ -30,11 +31,17 @@ async def extract_text_from_s3_url(url: str):
         print(f"Extraction Error: {e}")
         return "" 
 
-def upload_cv_to_s3(file: UploadFile, job_id: int):
+def upload_cv_to_s3(file: UploadFile, job_id: int, user_id: str):
     bucket_name = settings.AWS_BUCKET_NAME
-    file_key = f"resumes/job_{job_id}/{file.filename}"
+    
+    timestamp = int(time.time())
+    unique_filename = f"{timestamp}_{file.filename}"
+    
+    file_key = f"resumes/user_{user_id}/job_{job_id}/{unique_filename}"
     
     try:
+        file.file.seek(0)
+        
         s3_client.upload_fileobj(
             file.file,
             bucket_name,
@@ -43,7 +50,9 @@ def upload_cv_to_s3(file: UploadFile, job_id: int):
                 "ContentType": file.content_type,
             }
         )
-        return f"https://{bucket_name}.s3.{'ap-south-1'}.amazonaws.com/{file_key}"
+        url = f"https://{bucket_name}.s3.{settings.AWS_REGION}.amazonaws.com/{file_key}"
+        return {"url": url, "cv_name": unique_filename}
+        
     except Exception as e:
         print(f"S3 Upload Error: {e}")
         return None
