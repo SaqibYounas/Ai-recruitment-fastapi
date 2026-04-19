@@ -15,7 +15,7 @@ from fastapi import HTTPException, status, Depends
 from fastapi import Cookie 
 from app.db.session import get_session
 from sqlmodel import Session, select
-from app.models.auth import User
+from app.models.user import User
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")

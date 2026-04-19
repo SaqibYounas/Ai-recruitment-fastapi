@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import select 
 import jwt
 from app.core.settings import settings
-from app.models.auth import User 
+from app.models.user import User 
 from app.db.session import SessionLocal 
 async def auth_middleware(request: Request, call_next):
     public_paths = ["/auth/login", "/auth/signup", "/docs", "/openapi.json", "/jobs/all"]

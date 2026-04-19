@@ -3,7 +3,7 @@ from sqlmodel import Session
 from typing import Annotated, List
 from app.db.session import get_session
 from app.models.job import JobCreate, JobResponse
-from app.models.auth import User
+from app.models.user import User
 from app.services.jobs import create_new_job, get_all_jobs
 from sqlmodel import Session, select
 

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.auth import auth_router
 from app.routes.job import job_router
-from app.models.auth import create_db
+from app.models.user import create_db
 from app.routes.application import app_router
 from app.middleware.auth_handle import auth_middleware
 app = FastAPI()

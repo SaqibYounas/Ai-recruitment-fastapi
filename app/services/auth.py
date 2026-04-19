@@ -2,7 +2,7 @@ from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from sqlmodel import select
 from app.schemas.auth import UserSignup, CompanyInfo
 from app.schemas.auth import RegisterResponse, CompanyResponse, UserOut
-from app.models.auth import User, Company
+from app.models.user import User, Company
 from pwdlib import PasswordHash
 from app.db.session import get_session
 password_hasher = PasswordHash.recommended()

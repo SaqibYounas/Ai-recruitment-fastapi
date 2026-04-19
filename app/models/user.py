@@ -9,6 +9,11 @@ class CompanySize(str, enum.Enum):
     medium = "medium"
     large = "large"
 
+class PackageTier(str, enum.Enum):
+    free = "free"
+    premium = "premium"
+    enterprise = "enterprise"
+
 class Company(SQLModel, table=True):
     __tablename__ = "companies"
 
@@ -18,9 +23,11 @@ class Company(SQLModel, table=True):
     company_size: CompanySize
     industry_type: str
     location: str
+    package: PackageTier = Field(default=PackageTier.free)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
     users: List["User"] = Relationship(back_populates="company")
+    jobs: List["Job"] = Relationship(back_populates="company")
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -32,9 +39,8 @@ class User(SQLModel, table=True):
     
     company_id: Optional[str] = Field(default=None, foreign_key="companies.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    
     company: Optional[Company] = Relationship(back_populates="users")
 
-from app.config.dbconnection import engine
-
-def create_db():
+def create_db(engine):
     SQLModel.metadata.create_all(engine)
