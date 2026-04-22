@@ -1,0 +1,3 @@
+"""
+AI Recruitment FastAPI Application
+"""
